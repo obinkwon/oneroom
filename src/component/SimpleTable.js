@@ -12,6 +12,7 @@ import PaginationLink from './paginationLink';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
+import { getExpend } from '../api/ApiService';
 
 
 const useStyles = makeStyles({
@@ -20,8 +21,8 @@ const useStyles = makeStyles({
   },
 });
 
-const createData = (name, count) => {
-  return { name, count};
+const createData = (pid, name, count) => {
+  return { pid, name, count};
 }
 
 const StyledTableCell = withStyles((theme) => ({
@@ -35,16 +36,16 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 const rows = [
-  createData('휴지',12),
-  createData('치약',11),
-  createData('물',22),
-  createData('휴지2',15),
-  createData('치약2',12),
-  createData('물2',14),
-  createData('휴지3',13),
-  createData('치약3',10),
-  createData('물3',18),
-  createData('휴지4',22),
+  createData('1','휴지',12),
+  createData('2','치약',11),
+  createData('3','물',22),
+  createData('4','휴지2',15),
+  createData('5','치약2',12),
+  createData('6','물2',14),
+  createData('7','휴지3',13),
+  createData('8','치약3',10),
+  createData('9','물3',18),
+  createData('10','휴지4',22),
 ];
 
 export default function SimpleTable() {
@@ -52,12 +53,23 @@ export default function SimpleTable() {
   const classes = useStyles();
   const history = useHistory();
 
-  const deleteRow = (key) => {
-    alert(key+'번째가 삭제 되었습니다');
+  const deleteRow = (index) => {
+    alert(index+'번째가 삭제 되었습니다');
   }
 
-  const updateSection = (key) => {
-    history.push("/UptSection");
+  const updateSection = () => {
+    getExpend().then(res => {
+      const data = res.data;
+      if(data.code === '3001'){
+        history.push("/UptSection");
+      }else if(data.code === '3002'){
+        alert('parameter정보 없음');
+      }
+      console.log(res); // response 값 출력
+      console.log(data); // response의 data 값 출력
+    }).catch(err => {
+      console.error(err); // Error 출력
+    });
   }
 
   return (
@@ -72,8 +84,8 @@ export default function SimpleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row,key) => (
-            <TableRow id={key}>
+          {rows.map((row,index) => (
+            <TableRow key={index}>
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
@@ -86,7 +98,7 @@ export default function SimpleTable() {
                 </IconButton>  
               </TableCell>
               <TableCell align="right">
-                <IconButton aria-label="delete" onClick={() => deleteRow(key)}>
+                <IconButton aria-label="delete" onClick={() => deleteRow(index)}>
                   <DeleteIcon />
                 </IconButton>  
               </TableCell>
